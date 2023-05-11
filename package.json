@@ -1,6 +1,6 @@
 {
   "name": "markdown-it-quiz",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Markdown-it plugin to create openordu quizes.",
   "main": "index.js",
   "scripts": {
