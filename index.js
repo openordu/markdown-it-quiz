@@ -1,8 +1,24 @@
 const container = require('markdown-it-container');
 
+let scriptInjected = false; // Add this line to track if the script has been injected
+
+function injectScript() {
+  return '<script src="/js/quiz.js"></script>';
+}
+
 module.exports = function quizPlugin(md) {
   let currentQuestion = null;
-
+  if (!scriptInjected) {
+    md.core.ruler.push('inject_script', function(state) {
+      state.tokens.push({
+        type: 'html_block',
+        content: injectScript(),
+        block: true,
+        level: 0
+      });
+    });
+    scriptInjected = true;
+  }
   md.use(container, 'quiz', {
     render: function (tokens, idx) {
       if (tokens[idx].nesting === 1) {
