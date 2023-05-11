@@ -1,0 +1,32 @@
+{
+  "name": "markdown-it-quiz",
+  "version": "1.0.0",
+  "description": "Markdown-it plugin to create openordu quizes.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openordu/markdown-it-quiz.git"
+  },
+  "keywords": [
+    "markdown-it-plugin",
+    "markdown-it",
+    "markdown",
+    "tip",
+    "bootstrap"
+  ],
+  "author": {
+    "name": "patchshorts",
+    "email": "patchshorts@gmail.com"
+  },
+  "license": "None",
+  "bugs": {
+    "url": "https://github.com/openordu/markdown-it-quiz/issues"
+  },
+  "homepage": "https://github.com/openordu/markdown-it-quiz#readme",
+  "dependencies": {
+    "markdown-it-container": "^2.0.0"
+  }
+}
