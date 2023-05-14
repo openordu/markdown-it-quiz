@@ -19,34 +19,52 @@ module.exports = function quizPlugin(md) {
     });
     scriptInjected = true;
   }
-  md.use(container, 'quiz', {
+  md.use(container, 'question', {
     render: function (tokens, idx) {
       if (tokens[idx].nesting === 1) {
         const questionData = tokens[idx].info.trim().split(' ').slice(1).join(' ');
-        const correctAnswerIndex = parseInt(questionData.split('|')[0].trim());
+        const correctAnswers = questionData.split('|')[0].trim().split(',').map(Number);
         const question = questionData.split('|')[1].trim();
         currentQuestion = {
-          correctAnswerIndex,
+          correctAnswers,
           question,
           options: [],
+          questionType: 'multiple-choice', // set default question type
         };
+        // Check if the question starts with "Fill in the blank:"
+        if (question.startsWith('Fill in the blank:')) {
+          currentQuestion.questionType = 'fill-in-the-blank';
+        }
         return '';
       } else {
-        const { correctAnswerIndex, question, options } = currentQuestion;
-        const questionHtml = `<div class="question" data-answer="${correctAnswerIndex}"><h2>${question}</h2><div class="list-group">${options.join('')}</div></div>`;
-        currentQuestion = null;
-        return questionHtml;
+        const { correctAnswers, question, options, questionType } = currentQuestion;
+        if (questionType === 'fill-in-the-blank') {
+          let questionHtml = `
+          <div class="question" data-answers="${correctAnswers.join(',')}">
+            <h2>${question}</h2>
+            <div class="word-bank btn-group" role="group">
+              ${options.map(option => `${option}`).join('')}
+            </div>
+          </div>`;
+        questionHtml = questionHtml.replace(/_{2,}/g, '<input type="text" class="blank form-control-inline" style="width: 100px;" data-answers="' + correctAnswers.join(',') + '" readonly>');
+        null;
+          return questionHtml;
+        } else {
+          const questionHtml = `<div class="question" data-answers="${correctAnswers.join(',')}"><h2>${question}</h2><div class="list-group">${options.join('')}</div></div>`;
+          currentQuestion = null;
+          return questionHtml;
+        }
       }
     },
   });
-
+  
   md.use(container, 'option', {
     render: function (tokens, idx) {
       if (tokens[idx].nesting === 1) {
         return '';
       } else {
         const optionText = tokens[idx - 2].content.trim();
-        const optionHtml = `<button type="button" class="list-group-item list-group-item-action">${optionText}</button>`;
+        const optionHtml = `<button type="button" class="btn btn-outline-primary list-group-item list-group-item-action constructed-inside-option">${optionText}</button>`;
         if (currentQuestion) {
           currentQuestion.options.push(optionHtml);
         }
@@ -54,9 +72,11 @@ module.exports = function quizPlugin(md) {
       }
     },
   });
-
+  
+  
+  
   md.renderer.rules.text = function (tokens, idx, options, env, self) {
-    if (currentQuestion) {
+    if (currentQuestion && tokens[idx].level !== 2) {
       return '';
     }
     return self.renderToken(tokens, idx, options);
