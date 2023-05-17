@@ -32,25 +32,31 @@ module.exports = function quizPlugin(md) {
           questionType: 'multiple-choice', // set default question type
         };
         // Check if the question starts with "Fill in the blank:"
-        if (question.startsWith('Fill in the blank:')) {
+        if (question.match(/_/g) && question.match(/_/g).length >= 3) {
           currentQuestion.questionType = 'fill-in-the-blank';
+        } else if (question.match(/Match/g)) {
+          currentQuestion.questionType = 'match';
         }
         return '';
       } else {
         const { correctAnswers, question, options, questionType } = currentQuestion;
         if (questionType === 'fill-in-the-blank') {
           let questionHtml = `
-          <div class="question" data-answers="${correctAnswers.join(',')}">
-            <h2>${question}</h2>
-            <div class="word-bank btn-group" role="group">
-              ${options.map(option => `${option}`).join('')}
-            </div>
-          </div>`;
-        questionHtml = questionHtml.replace(/_{2,}/g, '<input type="text" class="blank form-control-inline" style="width: 100px;" data-answers="' + correctAnswers.join(',') + '" readonly>');
-        null;
+            <div class="question" data-answers="${correctAnswers.join(',')}" data-qtype="${questionType}">
+              <h2>${question}</h2>
+              <div class="word-bank btn-group" role="group">
+                ${options.map(option => `${option}`).join('')}
+              </div>
+            </div>`;
+        
+          // Replace the blanks with the correct answer inputs
+          let blanks = question.match(/_{2,}/g);
+          for (let i = 0; i < blanks.length; i++) {
+            questionHtml = questionHtml.replace(blanks[i], `<input type="text" class="blank form-control-inline" style="width: 100px;" data-answer="${options[correctAnswers[i]].replace(/<[^>]+>/g, '')}" readonly>`);
+          }
           return questionHtml;
         } else {
-          const questionHtml = `<div class="question" data-answers="${correctAnswers.join(',')}"><h2>${question}</h2><div class="list-group">${options.join('')}</div></div>`;
+          const questionHtml = `<div class="question" data-qtype="${questionType}" data-answers="${correctAnswers.join(',')}"><h2>${question}</h2><div class="list-group">${options.join('')}</div></div>`;
           currentQuestion = null;
           return questionHtml;
         }
