@@ -79,26 +79,24 @@ module.exports = function quizPlugin(md) {
     },
   });
   
-  
-  
   md.renderer.rules.text = function (tokens, idx, options, env, self) {
     if (currentQuestion && tokens[idx].level !== 2) {
       return '';
     }
-    return self.renderToken(tokens, idx, options);
+    return tokens[idx].content;
   };
 
   md.renderer.rules.paragraph_open = function (tokens, idx, options, env, self) {
     if (currentQuestion) {
       return '';
     }
-    return self.renderToken(tokens, idx, options);
+    return tokens[idx].content;
   };
 
   md.renderer.rules.paragraph_close = function (tokens, idx, options, env, self) {
     if (currentQuestion) {
       return '';
     }
-    return self.renderToken(tokens, idx, options);
+    return tokens[idx].content;
   };
 };
