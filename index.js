@@ -40,9 +40,9 @@ module.exports = function quizPlugin(md) {
   md.use(container, 'quiz', {
     render: function (tokens, idx) {
       if (tokens[idx].nesting === 1) {
-        return '<div id="quiz">';
+        return '<div id="parentContainer"><div id="quiz">';
       } else {
-        return '</div>';
+        return '</div><p class="text-center mt-4">Score: <span id="score">0</span></p></div>';
       }
     },
   });
