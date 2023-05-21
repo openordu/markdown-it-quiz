@@ -37,6 +37,15 @@ module.exports = function quizPlugin(md) {
     });
     scriptInjected = true;
   }
+  md.use(container, 'quiz', {
+    render: function (tokens, idx) {
+      if (tokens[idx].nesting === 1) {
+        return '<div id="quiz">';
+      } else {
+        return '</div>';
+      }
+    },
+  });
   md.use(container, 'question', {
     render: function (tokens, idx) {
       if (tokens[idx].nesting === 1) {
