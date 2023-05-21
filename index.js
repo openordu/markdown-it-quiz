@@ -1,5 +1,17 @@
 const container = require('markdown-it-container');
 
+const fs = require('fs');
+const path = require('path');
+
+// Define the source file and destination file
+const sourceFile = path.join(__dirname, 'node_modules', 'markdown-it-quiz', 'quiz.js');
+const destFile = path.join(__dirname,  'src', 'js', 'quiz.js');
+
+// Copy the file
+// Check if the file exists and if not, copy the file
+if (!fs.existsSync(destFile)) {
+  fs.copyFileSync(sourceFile, destFile);
+}
 let scriptInjected = false; // Add this line to track if the script has been injected
 
 function injectScript() {
@@ -8,19 +20,19 @@ function injectScript() {
 
 module.exports = function quizPlugin(md) {
   let currentQuestion = null;
-  if (!scriptInjected) {
-    md.core.ruler.push('inject_script', function(state) {
-      state.tokens.push({
-        type: 'html_block',
-        content: injectScript(),
-        block: true,
-        level: 0
-      });
-    });
-    scriptInjected = true;
-  }
   md.use(container, 'question', {
     render: function (tokens, idx) {
+      if (!scriptInjected) {
+        md.core.ruler.push('inject_script', function(state) {
+          state.tokens.push({
+            type: 'html_block',
+            content: injectScript(),
+            block: true,
+            level: 0
+          });
+        });
+        scriptInjected = true;
+      }
       if (tokens[idx].nesting === 1) {
         const questionData = tokens[idx].info.trim().split(' ').slice(1).join(' ');
         const correctAnswers = questionData.split('|')[0].trim().split(',').map(Number);
