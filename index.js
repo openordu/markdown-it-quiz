@@ -4,9 +4,14 @@ const fs = require('fs');
 const path = require('path');
 
 // Define the source file and destination file
-const sourceFile = path.join(__dirname, 'node_modules', 'markdown-it-quiz', 'quiz.js');
-const destFile = path.join(__dirname,  'src', 'js', 'quiz.js');
+const sourceFile = path.join(__dirname, 'quiz.js');
+const destDir = path.join(__dirname, '..', '..', 'public', 'js');
+const destFile = path.join(destDir, 'quiz.js');
 
+// Create the destination directory if it doesn't exist
+if (!fs.existsSync(destDir)) {
+  fs.mkdirSync(destDir, { recursive: true });
+}
 // Copy the file
 // Check if the file exists and if not, copy the file
 if (!fs.existsSync(destFile)) {
