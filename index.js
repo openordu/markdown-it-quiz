@@ -117,13 +117,13 @@ module.exports = function quizPlugin(md) {
     if (currentQuestion) {
       return '';
     }
-    return tokens[idx].content;
+    return '<p>';
   };
 
   md.renderer.rules.paragraph_close = function (tokens, idx, options, env, self) {
     if (currentQuestion) {
       return '';
     }
-    return tokens[idx].content;
+    return '</p>'
   };
 };
